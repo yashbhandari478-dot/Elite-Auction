@@ -1,0 +1,146 @@
+<div class="sales-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>🏪 My Sales & Delivery Management</h1>
+            <p class="subtitle">Manage your won auction deliveries</p>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    <div *ngIf="successMessage" class="alert alert-success">✅ {{ successMessage }}</div>
+    <div *ngIf="error" class="alert alert-danger">❌ {{ error }}</div>
+
+    <!-- Stats Summary -->
+    <div *ngIf="!loading && sales.length > 0" class="stats-row">
+        <div class="stat-card">
+            <div class="stat-value">{{ sales.length }}</div>
+            <div class="stat-label">Total Sales</div>
+        </div>
+        <div class="stat-card stat-revenue">
+            <div class="stat-value">₹{{ getTotalRevenue() | number }}</div>
+            <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card stat-pending">
+            <div class="stat-value">{{ getPendingCount() }}</div>
+            <div class="stat-label">Awaiting Payment</div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading sales...</p>
+    </div>
+
+    <!-- Sales List -->
+    <div *ngIf="!loading && sales.length > 0" class="sales-list">
+        <div class="sale-card" *ngFor="let sale of sales">
+            <div class="sale-header">
+                <div class="product-info">
+                    <h3>{{ sale.productName }}</h3>
+                    <p class="buyer-name">👤 {{ sale.customerName }}</p>
+                </div>
+                <div class="sale-amount">
+                    <span class="amount">₹{{ sale.winningAmount | number }}</span>
+                    <span class="payment-badge" [ngClass]="sale.paymentStatus === 'completed' ? 'paid' : 'unpaid'">
+                        {{ sale.paymentStatus === 'completed' ? '💳 Paid' : '⏳ Unpaid' }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="sale-body">
+                <!-- Delivery Progress -->
+                <div *ngIf="sale.paymentStatus === 'completed'" class="delivery-section">
+                    <div class="delivery-status">
+                        <span class="delivery-label">Delivery Status:</span>
+                        <span class="status-chip" [ngClass]="getStatusClass(sale.deliveryStatus)">
+                            {{ getDeliveryStatusLabel(sale.deliveryStatus) }}
+                        </span>
+                    </div>
+
+                    <!-- Tracking Timeline -->
+                    <div *ngIf="sale.trackingHistory && sale.trackingHistory.length > 0" class="tracking-mini">
+                        <div class="tracking-event" *ngFor="let event of sale.trackingHistory; let last = last">
+                            <div class="event-dot" [class.last]="last"></div>
+                            <div class="event-info">
+                                <span class="event-status">{{ getDeliveryStatusLabel(event.status) }}</span>
+                                <span class="event-time">{{ event.timestamp | date:'short' }}</span>
+                                <span class="event-location" *ngIf="event.location">📍 {{ event.location }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Address -->
+                    <div *ngIf="sale.deliveryAddress" class="delivery-address">
+                        <span class="addr-label">📦 Ship to:</span>
+                        <span class="addr-text">
+                            {{ sale.deliveryAddress.fullName }}, {{ sale.deliveryAddress.address }}, {{
+                            sale.deliveryAddress.city }}, {{ sale.deliveryAddress.state }} - {{
+                            sale.deliveryAddress.pincode }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Awaiting payment -->
+                <div *ngIf="sale.paymentStatus !== 'completed'" class="awaiting-payment">
+                    <p>⏳ Awaiting buyer payment. Delivery options will be enabled after payment confirmation.</p>
+                </div>
+            </div>
+
+            <div class="sale-footer">
+                <span class="sale-date">🗓️ Won on {{ sale.auctionEndTime | date:'mediumDate' }}</span>
+                <button *ngIf="canUpdateDelivery(sale)" class="btn-update" (click)="openUpdateModal(sale)">
+                    📦 Update Delivery Status
+                </button>
+                <span *ngIf="sale.deliveryStatus === 'delivered'" class="completed-label">✅ Delivered</span>
+                <span *ngIf="sale.paymentStatus !== 'completed'" class="wait-label">Payment Pending</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && sales.length === 0" class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>No sales yet</h3>
+        <p>When auctions you listed are won and finalized, they'll appear here.</p>
+    </div>
+
+    <!-- Update Delivery Status Modal -->
+    <div class="modal-overlay" *ngIf="showUpdateModal" (click)="closeModal()">
+        <div class="modal-box" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>📦 Update Delivery Status</h3>
+                <button class="modal-close" (click)="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-product">{{ selectedSale?.productName }}</p>
+
+                <div class="form-group">
+                    <label>New Status *</label>
+                    <select [(ngModel)]="updateForm.deliveryStatus" class="form-select">
+                        <option value="">-- Select status --</option>
+                        <option *ngFor="let opt of deliveryStatusOptions" [value]="opt.value">{{ opt.label }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Current Location</label>
+                    <input type="text" [(ngModel)]="updateForm.location" class="form-input"
+                        placeholder="e.g. Mumbai Sorting Facility" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description / Note</label>
+                    <textarea [(ngModel)]="updateForm.description" class="form-input" rows="2"
+                        placeholder="Optional note to customer..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+                <button class="btn btn-primary" (click)="submitDeliveryUpdate()" [disabled]="updateLoading">
+                    {{ updateLoading ? 'Updating...' : '✅ Confirm Update' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

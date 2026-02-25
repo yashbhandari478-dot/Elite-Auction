@@ -1,0 +1,52 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <!-- Header -->
+    <div class="login-header">
+      <div class="login-logo">🔨</div>
+      <h1>Elite Auction</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+
+      <div class="alert-error" *ngIf="error">{{ error }}</div>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" class="input" formControlName="email" placeholder="you@example.com"
+          [class.invalid]="f['email'].invalid && f['email'].touched" />
+        <div class="field-error" *ngIf="f['email'].invalid && f['email'].touched">
+          <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+          <span *ngIf="f['email'].errors?.['email']">Enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" class="input" formControlName="password"
+            placeholder="••••••••" [class.invalid]="f['password'].invalid && f['password'].touched" />
+          <button type="button" class="eye-btn" (click)="showPassword = !showPassword">
+            {{ showPassword ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        <div class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
+          Password is required
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="loading">
+        <span class="spinner" *ngIf="loading"></span>
+        <span *ngIf="!loading">Sign In</span>
+        <span *ngIf="loading">Signing in…</span>
+      </button>
+
+      <p class="register-link">
+        Don't have an account? <a routerLink="/register">Register here</a>
+      </p>
+
+    </form>
+  </div>
+</div>

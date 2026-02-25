@@ -1,0 +1,79 @@
+<div class="container">
+  <button class="btn btn-warning mb-20" routerLink="/supplier/dashboard">← Back to Dashboard</button>
+
+  <div *ngIf="loading" class="text-center"><div class="spinner"></div></div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  <div class="alert alert-success" *ngIf="success">{{ success }}</div>
+
+  <div *ngIf="product && !loading">
+    <div class="grid grid-2">
+      <!-- Product Info -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">{{ product.name }}</h2>
+          <span class="badge" [ngClass]="{
+            'badge-success': product.status === 'active',
+            'badge-warning': product.status === 'pending',
+            'badge-info': product.status === 'completed',
+            'badge-danger': product.status === 'cancelled'
+          }">{{ product.status | uppercase }}</span>
+        </div>
+
+        <div class="product-image" *ngIf="product.images && product.images.length > 0">
+          <img [src]="product.images[0]" [alt]="product.name" />
+        </div>
+        <div class="placeholder-img" *ngIf="!product.images || product.images.length === 0">📦</div>
+
+        <table class="info-table">
+          <tr><td>Category</td><td><strong>{{ product.category }}</strong></td></tr>
+          <tr><td>Base Price</td><td><strong>₹{{ product.basePrice | number }}</strong></td></tr>
+          <tr><td>Current Bid</td><td class="highlight">₹{{ (product.currentPrice || product.basePrice) | number }}</td></tr>
+          <tr><td>Total Bids</td><td><strong>{{ bids.length }}</strong></td></tr>
+          <tr><td>Start Time</td><td>{{ product.auctionStartTime | date:'medium' }}</td></tr>
+          <tr><td>End Time</td><td>{{ product.auctionEndTime | date:'medium' }}</td></tr>
+          <tr><td>Time Left</td><td class="timer">{{ timeRemaining }}</td></tr>
+        </table>
+
+        <p class="description">{{ product.description }}</p>
+
+        <div class="action-buttons" *ngIf="product.status === 'completed' && bids.length > 0">
+          <button class="btn btn-success" (click)="acceptBid()">✅ Accept Highest Bid</button>
+          <button class="btn btn-danger" (click)="rejectBid()">❌ Reject Bid</button>
+        </div>
+      </div>
+
+      <!-- Bids List -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Bid History ({{ bids.length }})</h3>
+        </div>
+        <div *ngIf="bids.length === 0" class="text-center p-20">
+          <p>No bids placed yet.</p>
+        </div>
+        <table class="table" *ngIf="bids.length > 0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Bidder</th>
+              <th>Amount</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let bid of bids; let i = index" [class.winning-row]="bid.isWinning">
+              <td>{{ i + 1 }}</td>
+              <td>{{ bid.customerName }}</td>
+              <td class="bid-amount">₹{{ bid.bidAmount | number }}</td>
+              <td>{{ bid.bidTime | date:'short' }}</td>
+              <td>
+                <span class="badge badge-success" *ngIf="bid.isWinning">🏆 Winning</span>
+                <span class="badge badge-danger" *ngIf="!bid.isWinning">Outbid</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>👥 User Management</h1>
+      <p class="subtitle">{{ totalUsers }} total users registered</p>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">✅ {{ successMessage }}</div>
+  <div *ngIf="error" class="alert alert-danger">❌ {{ error }}</div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filter-row">
+      <div class="search-box">
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search by name or email..." class="form-input"
+          (keyup.enter)="onSearch()" />
+        <button class="btn btn-primary" (click)="onSearch()">🔍 Search</button>
+      </div>
+      <div class="role-filter">
+        <select [(ngModel)]="roleFilter" (change)="onSearch()" class="form-select">
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="supplier">Supplier</option>
+          <option value="customer">Customer</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading users...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading && users.length > 0" class="table-card">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" [class.blocked-row]="user.isBlocked">
+          <td class="name-cell">
+            <div class="user-avatar">{{ user.name?.charAt(0)?.toUpperCase() }}</div>
+            <span>{{ user.name }}</span>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="badge" [ngClass]="'badge-' + user.role">{{ user.role }}</span>
+          </td>
+          <td>{{ user.phone || '—' }}</td>
+          <td>
+            <span class="status-badge status-active" *ngIf="user.isApproved && !user.isBlocked">Active</span>
+            <span class="status-badge status-pending" *ngIf="!user.isApproved">Pending</span>
+            <span class="status-badge status-blocked" *ngIf="user.isBlocked">Blocked</span>
+          </td>
+          <td>{{ user.createdAt | date:'mediumDate' }}</td>
+          <td class="actions-cell">
+            <button *ngIf="!user.isApproved && user.role !== 'admin'" class="btn-action btn-approve"
+              (click)="approveUser(user._id!)" title="Approve user">✅ Approve</button>
+            <button *ngIf="!user.isBlocked && user.role !== 'admin'" class="btn-action btn-block"
+              (click)="blockUser(user)" title="Block user">🚫 Block</button>
+            <button *ngIf="user.isBlocked && user.role !== 'admin'" class="btn-action btn-unblock"
+              (click)="unblockUser(user)" title="Unblock user">✅ Unblock</button>
+            <button *ngIf="user.role !== 'admin'" class="btn-action btn-delete" (click)="deleteUser(user)"
+              title="Delete user">🗑️ Delete</button>
+            <span *ngIf="user.role === 'admin'" class="admin-label">Protected</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && users.length === 0" class="empty-state">
+    <div class="empty-icon">👤</div>
+    <h3>No users found</h3>
+    <p>Try adjusting your search or filter.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination">
+    <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">‹ Prev</button>
+    <button *ngFor="let p of getPages()" class="page-btn" [class.active]="p === currentPage" (click)="changePage(p)">{{
+      p }}</button>
+    <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next
+      ›</button>
+  </div>
+</div>

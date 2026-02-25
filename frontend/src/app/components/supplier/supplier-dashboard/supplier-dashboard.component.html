@@ -1,0 +1,90 @@
+<div class="container">
+  <h1>Supplier Dashboard</h1>
+
+  <div class="grid grid-4 mt-20">
+    <div class="stat-card card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-value">{{ stats.totalProducts }}</div>
+      <div class="stat-label">Total Products</div>
+    </div>
+
+    <div class="stat-card card">
+      <div class="stat-icon">🔴</div>
+      <div class="stat-value">{{ stats.activeAuctions }}</div>
+      <div class="stat-label">Active Auctions</div>
+    </div>
+
+    <div class="stat-card card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value">{{ stats.completedAuctions }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+
+    <div class="stat-card card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-value">{{ stats.pendingProducts }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
+
+  <div class="mt-20">
+    <div class="card">
+      <div class="flex-between mb-20">
+        <h3>My Products</h3>
+        <button class="btn btn-primary" routerLink="/supplier/add-product">Add New Product</button>
+      </div>
+
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner"></div>
+      </div>
+
+      <div *ngIf="!loading && products.length > 0">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Base Price</th>
+              <th>Current Bid</th>
+              <th>Status</th>
+              <th>End Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of products">
+              <td>{{ product.name }}</td>
+              <td>{{ product.category }}</td>
+              <td>₹{{ product.basePrice }}</td>
+              <td>₹{{ product.currentPrice || product.basePrice }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-success': product.status === 'active',
+                  'badge-warning': product.status === 'pending',
+                  'badge-info': product.status === 'completed',
+                  'badge-danger': product.status === 'cancelled'
+                }">
+                  {{ product.status }}
+                </span>
+              </td>
+              <td>{{ product.auctionEndTime | date:'short' }}</td>
+              <td>
+                <button class="btn btn-primary btn-sm" [routerLink]="['/supplier/products', product._id]">
+                  View
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteProduct(product._id!)" *ngIf="product.status === 'pending'">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!loading && products.length === 0" class="text-center">
+        <p>You haven't added any products yet.</p>
+        <button class="btn btn-primary mt-20" routerLink="/supplier/add-product">Add Your First Product</button>
+      </div>
+    </div>
+  </div>
+</div>

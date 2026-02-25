@@ -1,0 +1,102 @@
+<div class="rating-submission-modal">
+  <h2>Rate This Product & Seller</h2>
+  
+  <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()">
+    <!-- Main Rating -->
+    <div class="rating-group">
+      <label>Overall Rating *</label>
+      <div class="stars-container">
+        <span 
+          *ngFor="let star of ratingStars" 
+          class="star"
+          [ngClass]="getStarClass(star, mainRating)"
+          (click)="setMainRating(star)"
+          (mouseenter)="onStarHover($event, 'add')"
+          (mouseleave)="onStarHover($event, 'remove')">
+          ★
+        </span>
+      </div>
+      <p class="rating-label" *ngIf="mainRating > 0">{{ getRatingLabel(mainRating) }}</p>
+      <span class="error-text" *ngIf="submitted && mainRating === 0">Please select a rating</span>
+    </div>
+
+    <!-- Category Ratings -->
+    <div class="category-ratings">
+      <!-- Quality Rating -->
+      <div class="rating-group">
+        <label>Product Quality</label>
+        <div class="stars-container">
+          <span 
+            *ngFor="let star of ratingStars" 
+            class="star"
+            [ngClass]="getStarClass(star, qualityRating)"
+            (click)="setQualityRating(star)">
+            ★
+          </span>
+        </div>
+      </div>
+
+      <!-- Communication Rating -->
+      <div class="rating-group">
+        <label>Seller Communication</label>
+        <div class="stars-container">
+          <span 
+            *ngFor="let star of ratingStars" 
+            class="star"
+            [ngClass]="getStarClass(star, communicationRating)"
+            (click)="setCommunicationRating(star)">
+            ★
+          </span>
+        </div>
+      </div>
+
+      <!-- Shipping Rating -->
+      <div class="rating-group">
+        <label>Shipping & Delivery</label>
+        <div class="stars-container">
+          <span 
+            *ngFor="let star of ratingStars" 
+            class="star"
+            [ngClass]="getStarClass(star, shippingRating)"
+            (click)="setShippingRating(star)">
+            ★
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Text -->
+    <div class="rating-group">
+      <label for="review">Review (Optional)</label>
+      <textarea 
+        formControlName="review"
+        id="review"
+        placeholder="Share your experience with this product and seller..."
+        rows="4"
+        class="review-textarea">
+      </textarea>
+      <small>{{ ratingForm.get('review')?.value?.length || 0 }} / 500 characters</small>
+      <div *ngIf="ratingForm.get('review')?.hasError('minlength')" class="error-text">
+        Review must be at least 10 characters
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="modal-buttons">
+      <button 
+        type="button" 
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        [disabled]="loading">
+        Cancel
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="loading || (submitted && ratingForm.invalid)">
+        <span *ngIf="!loading">Submit Rating</span>
+        <span *ngIf="loading">Submitting...</span>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,112 @@
+<div class="container">
+  <a class="btn-back" routerLink="/customer/dashboard">← Back to Auctions</a>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner"></div>
+  </div>
+  <div class="alert-danger" *ngIf="error && !loading">{{ error }}</div>
+  <div class="alert-success" *ngIf="success">{{ success }}</div>
+
+  <div *ngIf="product && !loading" class="detail-grid">
+    <!-- Product Details -->
+    <div class="detail-card">
+      <div class="product-image" *ngIf="product.images && product.images.length > 0">
+        <img [src]="product.images[0]" [alt]="product.name" />
+      </div>
+      <div class="placeholder-img" *ngIf="!product.images || product.images.length === 0">📦</div>
+
+      <div class="card-header">
+        <h2 class="card-title">{{ product.name }}</h2>
+        <span class="badge-info">{{ product.category }}</span>
+      </div>
+
+      <p class="description">{{ product.description }}</p>
+
+      <div class="price-section">
+        <div class="price-box">
+          <div class="label">Base Price</div>
+          <div class="base-price">₹{{ product.basePrice | number }}</div>
+        </div>
+        <div class="price-box current">
+          <div class="label">Current Highest Bid</div>
+          <div class="current-price">₹{{ (product.currentPrice || product.basePrice) | number }}</div>
+        </div>
+      </div>
+
+      <div class="timer-box" [class.ended]="timeRemaining === 'Auction Ended'">
+        <span>⏱️ {{ timeRemaining }}</span>
+      </div>
+
+      <div class="seller-info">
+        🏪 Seller: <strong>{{ product.supplierName }}</strong>
+      </div>
+
+      <!-- Bid Form -->
+      <div class="bid-section" *ngIf="product.status === 'active'">
+        <h3>Place Your Bid</h3>
+        <div class="alert-info">
+          <strong>Current Price:</strong> ₹{{ (product.currentPrice || product.basePrice) | number }}<br>
+          <strong>Minimum Bid:</strong> ₹{{ minBid | number }}
+        </div>
+        <form [formGroup]="bidForm" (ngSubmit)="onPlaceBid()">
+          <div class="form-group">
+            <label>Enter Your Bid Amount (₹)</label>
+            <input type="number" class="form-control" formControlName="bidAmount"
+              [class.is-invalid]="f['bidAmount'].invalid && f['bidAmount'].touched"
+              [placeholder]="'Must be at least ₹' + minBid" [min]="minBid" />
+            <div class="invalid-feedback" *ngIf="f['bidAmount'].invalid && f['bidAmount'].touched">
+              <span *ngIf="f['bidAmount'].errors?.['required']">Bid amount is required</span>
+              <span *ngIf="f['bidAmount'].errors?.['min']">Bid must be at least ₹{{ minBid | number }}</span>
+            </div>
+          </div>
+          <button type="submit" class="btn-success" [disabled]="submitting || bidForm.invalid">
+            {{ submitting ? 'Placing Bid...' : '💰 Place Bid' }}
+          </button>
+        </form>
+      </div>
+
+      <div class="ended-box" *ngIf="product.status !== 'active'">
+        <span class="badge-danger">Auction {{ product.status | titlecase }}</span>
+      </div>
+    </div>
+
+    <!-- Bid History -->
+    <div class="bid-history-card">
+      <div class="card-header">
+        <h3 class="card-title">Bid History ({{ bids.length }})</h3>
+      </div>
+      <div *ngIf="bids.length === 0" style="text-align:center; padding: 2rem; color: #6b7280;">
+        No bids yet. Be the first!
+      </div>
+      <table class="table" *ngIf="bids.length > 0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Bidder</th>
+            <th>Amount</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let bid of bids; let i = index" [class.winning-row]="bid.isWinning">
+            <td>{{ i + 1 }}</td>
+            <td>
+              {{ bid.customerName }}
+              <span class="badge-success" *ngIf="bid.isWinning">🏆</span>
+            </td>
+            <td class="bid-amount">₹{{ bid.bidAmount | number }}</td>
+            <td>{{ bid.bidTime | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ratings Display -->
+    <div class="ratings-card">
+      <app-rating-display 
+        [productId]="productId" 
+        [supplierId]="product.supplierId || ''">
+      </app-rating-display>
+    </div>
+  </div>
+</div>

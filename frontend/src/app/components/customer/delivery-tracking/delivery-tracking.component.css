@@ -1,0 +1,463 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:host {
+    font-family: 'Inter', sans-serif;
+    display: block;
+    background: #f5f7fa;
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+}
+
+/* ─ Page Header ─ */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+}
+
+h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    flex: 1;
+}
+
+.order-id {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 99px;
+    padding: 0.3em 0.9em;
+}
+
+.back-btn {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 0.85rem;
+    font-family: inherit;
+    padding: 0.55rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+/* ─ Tracker Body ─ */
+.tracker-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 820px;
+    margin: 0 auto;
+}
+
+/* ─ Cards ─ */
+.summary-card,
+.stage-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* ─ Summary Card ─ */
+.summary-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.summary-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.product-icon {
+    font-size: 2.5rem;
+    background: #eff6ff;
+    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.summary-left h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.25rem;
+}
+
+.summary-left p {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0.15rem 0;
+}
+
+.summary-left strong {
+    color: #111827;
+}
+
+.summary-left strong.amount {
+    color: #2563eb;
+}
+
+/* ─ ETA box ─ */
+.eta-box {
+    text-align: center;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    color: #fff;
+    min-width: 160px;
+}
+
+.eta-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.eta-date {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0.2rem 0;
+}
+
+.eta-days {
+    font-size: 0.78rem;
+    opacity: 0.85;
+}
+
+/* ─ Section title ─ */
+.section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #9ca3af;
+    margin: 0 0 1.25rem;
+}
+
+/* ─ Progress bar ─ */
+.progress-bar-wrap {
+    background: #f3f4f6;
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 1.75rem;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #2563eb, #10b981);
+    transition: width 0.6s ease;
+}
+
+/* ─ Stages ─ */
+.stages {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+.stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stage-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+}
+
+.stage-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+.stage.done .stage-icon {
+    background: #ecfdf5;
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+}
+
+.stage.active .stage-icon {
+    background: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.15);
+    animation: pulseBorder 2s ease-in-out infinite;
+}
+
+@keyframes pulseBorder {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0.05);
+    }
+}
+
+.stage-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-top: 0.5rem;
+    line-height: 1.3;
+}
+
+.stage.done .stage-label {
+    color: #059669;
+}
+
+.stage.active .stage-label {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.stage-sub {
+    font-size: 0.65rem;
+    color: #d1d5db;
+    margin-top: 0.15rem;
+    display: none;
+    /* show on active/done on wider screens */
+}
+
+.stage.active .stage-sub,
+.stage.done .stage-sub {
+    display: block;
+    color: #9ca3af;
+}
+
+/* ─ Current status bar ─ */
+.current-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    color: #374151;
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #2563eb;
+    flex-shrink: 0;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.6);
+        opacity: 0.5;
+    }
+}
+
+.current-label strong {
+    color: #2563eb;
+}
+
+/* ─ Tracking History ─ */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.history-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    position: relative;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d1d5db;
+    flex-shrink: 0;
+    margin-top: 4px;
+    border: 2px solid #e5e7eb;
+}
+
+.history-dot.dot-green {
+    background: #10b981;
+    border-color: #a7f3d0;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.history-latest .history-desc {
+    font-weight: 600;
+    color: #111827;
+}
+
+.history-content {
+    flex: 1;
+}
+
+.history-desc {
+    font-size: 0.88rem;
+    color: #374151;
+    margin-bottom: 0.3rem;
+}
+
+.history-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    flex-wrap: wrap;
+}
+
+/* ─ Delivery Address ─ */
+.address-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 0.88rem;
+    line-height: 1.8;
+}
+
+.address-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.address-line {
+    color: #374151;
+}
+
+.address-contact {
+    display: flex;
+    gap: 1.5rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* ─ Spinner ─ */
+.center-spin {
+    text-align: center;
+    padding: 5rem 0;
+}
+
+.spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.center-spin p {
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+/* ─ Alert ─ */
+.alert-danger {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.9rem;
+}
+
+/* ─ Responsive ─ */
+@media (max-width: 768px) {
+    :host {
+        padding: 1.5rem 1rem;
+    }
+
+    .stages {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .summary-card {
+        flex-direction: column;
+    }
+
+    .stage-sub {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    :host {
+        padding: 1rem;
+    }
+
+    .stages {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

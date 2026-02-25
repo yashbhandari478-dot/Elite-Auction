@@ -1,0 +1,50 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a [routerLink]="currentUser ? getDashboardRoute() : '/'">
+        <h2>🏆 Elite Auction</h2>
+      </a>
+    </div>
+
+    <div class="navbar-menu">
+      <div *ngIf="!currentUser" class="navbar-links">
+        <a routerLink="/login" routerLinkActive="active">Login</a>
+        <a routerLink="/register" routerLinkActive="active">Register</a>
+      </div>
+
+      <div *ngIf="currentUser" class="navbar-links">
+        <!-- Admin Links -->
+        <ng-container *ngIf="currentUser.role === 'admin'">
+          <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+          <a routerLink="/admin/users" routerLinkActive="active">Users</a>
+          <a routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+          <a routerLink="/admin/auctions" routerLinkActive="active">Auctions</a>
+          <a routerLink="/admin/products" routerLinkActive="active">Approve Products</a>
+        </ng-container>
+
+        <!-- Supplier Links -->
+        <ng-container *ngIf="currentUser.role === 'supplier'">
+          <a routerLink="/supplier/dashboard" routerLinkActive="active">Dashboard</a>
+          <a routerLink="/supplier/products" routerLinkActive="active">My Products</a>
+          <a routerLink="/supplier/add-product" routerLinkActive="active">Add Product</a>
+          <a routerLink="/supplier/scheduled" routerLinkActive="active">⏰ Scheduled</a>
+          <a routerLink="/supplier/sales" routerLinkActive="active">Sales</a>
+          <a routerLink="/supplier/analytics" routerLinkActive="active">📊 Analytics</a>
+        </ng-container>
+
+        <!-- Customer Links -->
+        <ng-container *ngIf="currentUser.role === 'customer'">
+          <a routerLink="/customer/dashboard" routerLinkActive="active">Browse Auctions</a>
+          <a routerLink="/customer/my-bids" routerLinkActive="active">My Bids</a>
+          <a routerLink="/customer/won-auctions" routerLinkActive="active">Won Auctions</a>
+        </ng-container>
+
+        <div class="user-menu">
+          <span class="username">{{ currentUser.name }}</span>
+          <a [routerLink]="'/' + currentUser.role + '/profile'" class="profile-link" title="My Profile">⚙️</a>
+          <button class="btn btn-danger btn-sm" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

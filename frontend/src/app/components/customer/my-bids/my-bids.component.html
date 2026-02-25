@@ -1,0 +1,70 @@
+<div class="container">
+  <h1>My Bids</h1>
+
+  <div class="stats-row" *ngIf="!loading">
+    <div class="stat-mini">
+      <div class="stat-num">{{ bids.length }}</div>
+      <div class="stat-label">Total Bids</div>
+    </div>
+    <div class="stat-mini winning">
+      <div class="stat-num">{{ winningCount }}</div>
+      <div class="stat-label">🏆 Currently Winning</div>
+    </div>
+    <div class="stat-mini outbid">
+      <div class="stat-num">{{ outbidCount }}</div>
+      <div class="stat-label">😞 Outbid</div>
+    </div>
+  </div>
+
+  <div class="filter-card">
+    <label>Filter Bids</label>
+    <select class="form-control" [(ngModel)]="filterStatus" (change)="applyFilter()">
+      <option value="all">All Bids</option>
+      <option value="winning">Currently Winning</option>
+      <option value="outbid">Outbid</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner"></div>
+  </div>
+  <div class="alert-danger" *ngIf="error">{{ error }}</div>
+
+  <div class="table-card" *ngIf="!loading">
+    <table class="table" *ngIf="filteredBids.length > 0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product</th>
+          <th>My Bid</th>
+          <th>Bid Time</th>
+          <th>Auction Status</th>
+          <th>Bid Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bid of filteredBids; let i = index" [class.winning-row]="bid.isWinning">
+          <td>{{ i + 1 }}</td>
+          <td><strong>{{ bid.productName }}</strong></td>
+          <td class="bid-amount">₹{{ bid.bidAmount | number }}</td>
+          <td>{{ bid.bidTime | date:'short' }}</td>
+          <td>
+            <span class="badge badge-info">{{ bid.status }}</span>
+          </td>
+          <td>
+            <span class="badge badge-success" *ngIf="bid.isWinning">🏆 Winning</span>
+            <span class="badge badge-danger" *ngIf="!bid.isWinning">Outbid</span>
+          </td>
+          <td>
+            <a class="btn-primary" [routerLink]="['/customer/product', bid.productId]">View →</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="empty-msg" *ngIf="filteredBids.length === 0">
+      <p>No bids found. Start bidding on active auctions!</p>
+      <button class="btn-browse" routerLink="/customer/dashboard">Browse Auctions</button>
+    </div>
+  </div>
+</div>

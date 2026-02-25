@@ -1,0 +1,130 @@
+<div class="scheduled-container">
+  <!-- Header -->
+  <div class="scheduled-header">
+    <h1>⏰ Scheduled Auctions</h1>
+    <p>Manage your scheduled product auctions - reschedule or cancel before activation</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading scheduled auctions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    <strong>Error:</strong> {{ error }}
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && scheduledProducts.length === 0" class="empty-state">
+    <div class="empty-icon">📅</div>
+    <h3>No Scheduled Auctions</h3>
+    <p>You don't have any scheduled auctions yet.</p>
+    <p>Create a product and schedule it for future activation.</p>
+  </div>
+
+  <!-- Scheduled Products List -->
+  <div *ngIf="!loading && scheduledProducts.length > 0" class="scheduled-list">
+    <div class="product-card" *ngFor="let product of scheduledProducts" [class.overdue]="isProductOverdue(product.scheduledActivationTime)">
+      <div class="card-header">
+        <h3>{{ product.name }}</h3>
+        <div class="card-badge">
+          <span class="status-badge" [class.overdue]="isProductOverdue(product.scheduledActivationTime)">
+            {{ isProductOverdue(product.scheduledActivationTime) ? '⚠️ Overdue' : '⏳ Scheduled' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="product-info">
+          <div class="info-row">
+            <span class="label">Category:</span>
+            <span class="value">{{ product.category }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Base Price:</span>
+            <span class="value">₹{{ product.basePrice | number : '1.0-0' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Status:</span>
+            <span class="value">{{ product.status | uppercase }}</span>
+          </div>
+          <div class="info-row highlight">
+            <span class="label">Scheduled Activation:</span>
+            <span class="value">{{ formatDateTime(product.scheduledActivationTime) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Time Remaining:</span>
+            <span class="value time-remaining" [class.overdue]="isProductOverdue(product.scheduledActivationTime)">
+              {{ getTimeUntilActivation(product.scheduledActivationTime) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button 
+          class="btn btn-warning"
+          (click)="openRescheduleModal(product)"
+          [disabled]="isProductOverdue(product.scheduledActivationTime)">
+          ✏️ Reschedule
+        </button>
+        <button 
+          class="btn btn-danger"
+          (click)="cancelScheduling(product)"
+          [disabled]="isProductOverdue(product.scheduledActivationTime)">
+          ❌ Cancel Scheduling
+        </button>
+      </div>
+
+      <div *ngIf="isProductOverdue(product.scheduledActivationTime)" class="overdue-notice">
+        ⚠️ This scheduled activation time has passed. The product may have already been activated.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reschedule Modal -->
+<div *ngIf="showRescheduleModal" class="modal-overlay" (click)="closeRescheduleModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>🔄 Reschedule Auction</h2>
+      <button class="close-btn" (click)="closeRescheduleModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="selectedProduct" class="product-info">
+        <p><strong>Product:</strong> {{ selectedProduct.name }}</p>
+        <p><strong>Current Scheduled Time:</strong> {{ formatDateTime(selectedProduct.scheduledActivationTime) }}</p>
+      </div>
+
+      <div class="form-group">
+        <label for="newScheduledTime">New Activation Date & Time</label>
+        <input 
+          type="datetime-local"
+          id="newScheduledTime"
+          [(ngModel)]="newScheduledTime"
+          class="form-input">
+        <small>Select a date and time in the future</small>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeRescheduleModal()" [disabled]="rescheduleLoading">
+        Cancel
+      </button>
+      <button 
+        class="btn btn-primary"
+        (click)="rescheduleProduct()"
+        [disabled]="!newScheduledTime || rescheduleLoading">
+        {{ rescheduleLoading ? '⏳ Updating...' : '✅ Reschedule' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,356 @@
+﻿node.exe : 
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (:String   
+ ) [], RemoteExce    
+ption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+Warning: src/app/comp
+onents/customer/deliv
+ery-tracking/delivery
+-tracking.component.h
+tml:71:99 - warning 
+NG8107: The left 
+side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the 
+'.' operator.
+
+71                 
+<span class="current-
+label">Current 
+Status: <strong>{{ st
+ages[currentStageInde
+x]?.label
+                     
+                     
+                     
+                     
+                 
+~~~~~
+
+  src/app/components/
+customer/delivery-tra
+cking/delivery-tracki
+ng.component.ts:35:18
+    35     
+templateUrl: './deliv
+ery-tracking.componen
+t.html',
+                     
+   ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
+    Error occurs in 
+the template of 
+component DeliveryTra
+ckingComponent.
+
+
+Warning: src/app/comp
+onents/customer/won-a
+uctions/won-auctions.
+component.html:231:53
+ - warning NG8107: 
+The left side of 
+this optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the 
+'.' operator.
+
+231                  
+ <div>Invoice #{{ sel
+ectedAuction?._id?.sl
+ice(-8)?.toUpperCase(
+) }}</div>
+                     
+                     
+              ~~~
+
+  src/app/components/
+customer/won-auctions
+/won-auctions.compone
+nt.ts:7:16
+    7   templateUrl: 
+'./won-auctions.compo
+nent.html',
+                     
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    Error occurs in 
+the template of 
+component 
+WonAuctionsComponent.
+
+
+Warning: src/app/comp
+onents/customer/won-a
+uctions/won-auctions.
+component.html:241:47
+ - warning NG8107: 
+The left side of 
+this optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the 
+'.' operator.
+
+241                  
+ <strong>{{ selectedA
+uction?.productName 
+}}</strong>
+                     
+                     
+        ~~~~~~~~~~~
+
+  src/app/components/
+customer/won-auctions
+/won-auctions.compone
+nt.ts:7:16
+    7   templateUrl: 
+'./won-auctions.compo
+nent.html',
+                     
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    Error occurs in 
+the template of 
+component 
+WonAuctionsComponent.
+
+
+Warning: src/app/comp
+onents/customer/won-a
+uctions/won-auctions.
+component.html:245:47
+ - warning NG8107: 
+The left side of 
+this optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the 
+'.' operator.
+
+245                  
+ <strong>{{ selectedA
+uction?.supplierName 
+|| 'ΓÇö' }}</strong>
+                     
+                     
+        ~~~~~~~~~~~~
+
+  src/app/components/
+customer/won-auctions
+/won-auctions.compone
+nt.ts:7:16
+    7   templateUrl: 
+'./won-auctions.compo
+nent.html',
+                     
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    Error occurs in 
+the template of 
+component 
+WonAuctionsComponent.
+
+
+Warning: src/app/comp
+onents/customer/won-a
+uctions/won-auctions.
+component.html:253:48
+ - warning NG8107: 
+The left side of 
+this optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the 
+'.' operator.
+
+253                  
+ <strong>Γé╣{{ select
+edAuction?.winningAmo
+unt | number 
+}}</strong>
+                     
+                     
+         
+~~~~~~~~~~~~~
+
+  src/app/components/
+customer/won-auctions
+/won-auctions.compone
+nt.ts:7:16
+    7   templateUrl: 
+'./won-auctions.compo
+nent.html',
+                     
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    Error occurs in 
+the template of 
+component 
+WonAuctionsComponent.
+
+
+Warning: D:/online-au
+ction-system (1)/onli
+ne-auction-system/fro
+ntend/src/app/compone
+nts/customer/customer
+-dashboard/customer-d
+ashboard.component.cs
+s exceeded maximum 
+budget. Budget 2.00 
+kB was not met by 
+6.86 kB with a total 
+of 8.86 kB.
+
+Warning: D:/online-au
+ction-system (1)/onli
+ne-auction-system/fro
+ntend/src/app/compone
+nts/customer/delivery
+-tracking/delivery-tr
+acking.component.css 
+exceeded maximum 
+budget. Budget 2.00 
+kB was not met by 
+3.32 kB with a total 
+of 5.32 kB.
+
+Warning: D:/online-au
+ction-system (1)/onli
+ne-auction-system/fro
+ntend/src/app/compone
+nts/customer/my-bids/
+my-bids.component.css
+ exceeded maximum 
+budget. Budget 2.00 
+kB was not met by 
+2.37 kB with a total 
+of 4.37 kB.
+
+Warning: D:/online-au
+ction-system (1)/onli
+ne-auction-system/fro
+ntend/src/app/compone
+nts/customer/product-
+detail/product-detail
+.component.css 
+exceeded maximum 
+budget. Budget 2.00 
+kB was not met by 
+3.78 kB with a total 
+of 5.78 kB.
+
+Warning: D:/online-au
+ction-system (1)/onli
+ne-auction-system/fro
+ntend/src/app/compone
+nts/customer/won-auct
+ions/won-auctions.com
+ponent.css exceeded 
+maximum budget. 
+Budget 2.00 kB was 
+not met by 9.00 kB 
+with a total of 
+11.00 kB.
+
+
+
+Error: D:/online-auct
+ion-system (1)/online
+-auction-system/front
+end/src/app/component
+s/customer/customer-d
+ashboard/customer-das
+hboard.component.css 
+exceeded maximum 
+budget. Budget 4.00 
+kB was not met by 
+4.86 kB with a total 
+of 8.86 kB.
+
+Error: D:/online-auct
+ion-system (1)/online
+-auction-system/front
+end/src/app/component
+s/customer/delivery-t
+racking/delivery-trac
+king.component.css 
+exceeded maximum 
+budget. Budget 4.00 
+kB was not met by 
+1.32 kB with a total 
+of 5.32 kB.
+
+Error: D:/online-auct
+ion-system (1)/online
+-auction-system/front
+end/src/app/component
+s/customer/my-bids/my
+-bids.component.css 
+exceeded maximum 
+budget. Budget 4.00 
+kB was not met by 
+379 bytes with a 
+total of 4.37 kB.
+
+Error: D:/online-auct
+ion-system (1)/online
+-auction-system/front
+end/src/app/component
+s/customer/product-de
+tail/product-detail.c
+omponent.css 
+exceeded maximum 
+budget. Budget 4.00 
+kB was not met by 
+1.78 kB with a total 
+of 5.78 kB.
+
+Error: D:/online-auct
+ion-system (1)/online
+-auction-system/front
+end/src/app/component
+s/customer/won-auctio
+ns/won-auctions.compo
+nent.css exceeded 
+maximum budget. 
+Budget 4.00 kB was 
+not met by 7.00 kB 
+with a total of 
+11.00 kB.
+
+

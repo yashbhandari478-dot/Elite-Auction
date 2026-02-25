@@ -1,0 +1,83 @@
+<div class="container">
+  <div class="flex-between mb-20">
+    <h1>Add New Product</h1>
+    <button class="btn btn-warning" routerLink="/supplier/products">← Back to Products</button>
+  </div>
+
+  <div class="card">
+    <div class="alert alert-success" *ngIf="success">{{ success }}</div>
+    <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" class="form-control" formControlName="name"
+            [class.is-invalid]="f['name'].invalid && f['name'].touched"
+            placeholder="e.g. iPhone 15 Pro Max" />
+          <div class="invalid-feedback" *ngIf="f['name'].invalid && f['name'].touched">Product name is required</div>
+        </div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select class="form-control" formControlName="category"
+            [class.is-invalid]="f['category'].invalid && f['category'].touched">
+            <option value="">-- Select Category --</option>
+            <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="f['category'].invalid && f['category'].touched">Category is required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description * <small>(min 20 characters)</small></label>
+        <textarea class="form-control" formControlName="description" rows="4"
+          [class.is-invalid]="f['description'].invalid && f['description'].touched"
+          placeholder="Describe your product in detail..."></textarea>
+        <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">
+          <span *ngIf="f['description'].errors?.['required']">Description is required</span>
+          <span *ngIf="f['description'].errors?.['minlength']">Description must be at least 20 characters</span>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label>Base Price (₹) *</label>
+          <input type="number" class="form-control" formControlName="basePrice"
+            [class.is-invalid]="f['basePrice'].invalid && f['basePrice'].touched"
+            placeholder="e.g. 10000" min="1" />
+          <div class="invalid-feedback" *ngIf="f['basePrice'].invalid && f['basePrice'].touched">
+            <span *ngIf="f['basePrice'].errors?.['required']">Base price is required</span>
+            <span *ngIf="f['basePrice'].errors?.['min']">Price must be at least ₹1</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Image URLs <small>(comma-separated)</small></label>
+          <input type="text" class="form-control" formControlName="images"
+            placeholder="https://img1.jpg, https://img2.jpg" />
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label>Auction Start Time *</label>
+          <input type="datetime-local" class="form-control" formControlName="auctionStartTime"
+            [class.is-invalid]="f['auctionStartTime'].invalid && f['auctionStartTime'].touched" />
+          <div class="invalid-feedback" *ngIf="f['auctionStartTime'].invalid && f['auctionStartTime'].touched">Start time is required</div>
+        </div>
+        <div class="form-group">
+          <label>Auction End Time *</label>
+          <input type="datetime-local" class="form-control" formControlName="auctionEndTime"
+            [class.is-invalid]="f['auctionEndTime'].invalid && f['auctionEndTime'].touched" />
+          <div class="invalid-feedback" *ngIf="f['auctionEndTime'].invalid && f['auctionEndTime'].touched">End time is required</div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success" [disabled]="loading">
+          {{ loading ? 'Creating...' : '🚀 Create Auction' }}
+        </button>
+        <button type="button" class="btn btn-warning" routerLink="/supplier/products">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

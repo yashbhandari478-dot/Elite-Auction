@@ -1,0 +1,143 @@
+<div class="dashboard">
+  <div class="page-header">
+    <h1>⚡ Admin Dashboard</h1>
+    <p class="subtitle">Platform overview and earnings</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+    <p>Loading dashboard…</p>
+  </div>
+
+  <div *ngIf="!loading">
+
+    <!-- ════════════ EARNINGS SECTION ════════════ -->
+    <div class="section-title">💰 Platform Earnings</div>
+    <div class="earnings-grid">
+
+      <!-- Total Platform Revenue -->
+      <div class="earn-card earn-primary">
+        <div class="earn-icon">🏦</div>
+        <div class="earn-body">
+          <div class="earn-label">Total Earnings</div>
+          <div class="earn-value">₹{{ earnings.totalPlatformRevenue | number:'1.2-2' }}</div>
+          <div class="earn-sub">Commission + Buyer's Premium</div>
+        </div>
+      </div>
+
+      <!-- Platform Commission (5%) -->
+      <div class="earn-card earn-green">
+        <div class="earn-icon">🏪</div>
+        <div class="earn-body">
+          <div class="earn-label">Platform Commission</div>
+          <div class="earn-value">₹{{ earnings.platformCommission | number:'1.2-2' }}</div>
+          <div class="earn-sub">5% deducted from supplier payouts</div>
+        </div>
+      </div>
+
+      <!-- Buyer's Premium (3%) -->
+      <div class="earn-card earn-amber">
+        <div class="earn-icon">🛍️</div>
+        <div class="earn-body">
+          <div class="earn-label">Buyer's Premium</div>
+          <div class="earn-value">₹{{ earnings.buyersPremiums | number:'1.2-2' }}</div>
+          <div class="earn-sub">3% charged on top to buyers</div>
+        </div>
+      </div>
+
+      <!-- GMV -->
+      <div class="earn-card earn-blue">
+        <div class="earn-icon">📊</div>
+        <div class="earn-body">
+          <div class="earn-label">Gross Merchandise Value</div>
+          <div class="earn-value">₹{{ earnings.totalRevenue | number:'1.2-2' }}</div>
+          <div class="earn-sub">Total winning amounts paid</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Payment status pills -->
+    <div class="payment-pills">
+      <span class="pill pill-green">✅ {{ earnings.completedPayments }} Payments Completed</span>
+      <span class="pill pill-amber">⏳ {{ earnings.pendingPayments }} Payments Pending</span>
+    </div>
+
+    <!-- ════════════ PLATFORM STATS ════════════ -->
+    <div class="section-title mt-section">📈 Platform Stats</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">{{ stats.totalUsers }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏪</div>
+        <div class="stat-value">{{ stats.totalSuppliers }}</div>
+        <div class="stat-label">Suppliers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🛒</div>
+        <div class="stat-value">{{ stats.totalCustomers }}</div>
+        <div class="stat-label">Customers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-value">{{ stats.totalProducts }}</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat-card stat-active">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-value">{{ stats.activeAuctions }}</div>
+        <div class="stat-label">Live Auctions</div>
+      </div>
+      <div class="stat-card stat-done">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ stats.completedAuctions }}</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔨</div>
+        <div class="stat-value">{{ stats.totalBids }}</div>
+        <div class="stat-label">Total Bids</div>
+      </div>
+    </div>
+
+    <!-- ════════════ RECENT SALES ════════════ -->
+    <div class="section-title mt-section" *ngIf="recentWins.length > 0">🕒 Recent Sales</div>
+    <div class="recent-table-wrap" *ngIf="recentWins.length > 0">
+      <table class="recent-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Customer</th>
+            <th>Winning Bid</th>
+            <th>Platform Earned</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let win of recentWins">
+            <td><strong>{{ win.productName }}</strong></td>
+            <td>{{ win.customerName }}</td>
+            <td class="amount-cell">₹{{ win.winningAmount | number }}</td>
+            <td class="earn-cell">
+              ₹{{ ((win.platformFee || 0) + (win.buyersPremium || 0)) | number:'1.2-2' }}
+            </td>
+            <td class="date-cell">{{ win.createdAt | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ════════════ QUICK ACTIONS ════════════ -->
+    <div class="section-title mt-section">⚡ Quick Actions</div>
+    <div class="actions-row">
+      <button class="action-btn" routerLink="/admin/users">👥 Manage Users</button>
+      <button class="action-btn" routerLink="/admin/categories">🏷️ Categories</button>
+      <button class="action-btn" routerLink="/admin/auctions">🔨 View Auctions</button>
+      <button class="action-btn" routerLink="/admin/products">📦 Approve Products</button>
+    </div>
+
+  </div>
+</div>

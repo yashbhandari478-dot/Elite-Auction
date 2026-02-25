@@ -1,0 +1,65 @@
+<div class="container">
+  <h1>Approve Products</h1>
+
+  <div class="alert alert-info" *ngIf="pendingProducts.length > 0">
+    You have <strong>{{ pendingProducts.length }}</strong> products pending approval
+  </div>
+
+  <div *ngIf="loading" class="text-center"><div class="spinner"></div></div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  <div class="alert alert-success" *ngIf="success">{{ success }}</div>
+
+  <div *ngIf="!loading && pendingProducts.length > 0" class="card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Supplier</th>
+          <th>Category</th>
+          <th>Base Price</th>
+          <th>Auction Period</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of pendingProducts">
+          <td><strong>{{ product.name }}</strong></td>
+          <td>{{ getSupplierInfo(product) }}</td>
+          <td>{{ product.category }}</td>
+          <td>₹{{ product.basePrice | number }}</td>
+          <td>
+            <small>
+              {{ product.auctionStartTime | date:'short' }}<br>
+              to<br>
+              {{ product.auctionEndTime | date:'short' }}
+            </small>
+          </td>
+          <td>
+            <small class="text-muted">{{ product.description | slice:0:50 }}...</small>
+          </td>
+          <td>
+            <button 
+              class="btn btn-success btn-sm" 
+              (click)="approveProduct(product._id!, product)"
+              title="Approve this product"
+            >
+              ✅ Approve
+            </button>
+            <button 
+              class="btn btn-danger btn-sm" 
+              (click)="rejectProduct(product._id!, product)"
+              title="Reject this product"
+            >
+              ❌ Reject
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && pendingProducts.length === 0" class="card text-center">
+    <p>No products pending approval. All products have been reviewed! ✅</p>
+  </div>
+</div>

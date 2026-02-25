@@ -1,0 +1,110 @@
+<div class="profile-page">
+    <div class="page-header">
+        <h1>👤 My Profile</h1>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading profile...</p>
+    </div>
+
+    <div *ngIf="!loading && user" class="profile-layout">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="avatar-section">
+                <div class="avatar-circle">{{ user.name?.charAt(0)?.toUpperCase() }}</div>
+                <h2>{{ user.name }}</h2>
+                <span class="role-badge">{{ getRoleLabel() }}</span>
+                <p class="email-text">{{ user.email }}</p>
+                <p class="member-since">Member since {{ user.createdAt | date:'mediumDate' }}</p>
+            </div>
+
+            <div class="info-list">
+                <div class="info-item">
+                    <span class="info-icon">📞</span>
+                    <div>
+                        <label>Phone</label>
+                        <p>{{ user.phone || 'Not provided' }}</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">📍</span>
+                    <div>
+                        <label>Address</label>
+                        <p>{{ user.address || 'Not provided' }}</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">✅</span>
+                    <div>
+                        <label>Account Status</label>
+                        <p [style.color]="user.isBlocked ? '#ef4444' : '#10b981'">
+                            {{ user.isBlocked ? 'Blocked' : (user.isApproved ? 'Active' : 'Pending') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Forms -->
+        <div class="forms-column">
+            <!-- Alert Messages -->
+            <div *ngIf="successMessage" class="alert alert-success">✅ {{ successMessage }}</div>
+            <div *ngIf="error" class="alert alert-danger">❌ {{ error }}</div>
+
+            <!-- Update Profile -->
+            <div class="form-card">
+                <h3>✏️ Edit Profile</h3>
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" [(ngModel)]="profileForm.name" class="form-input" placeholder="Your name" />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" [(ngModel)]="profileForm.phone" class="form-input"
+                        placeholder="+91 98765 43210" />
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea [(ngModel)]="profileForm.address" class="form-input" rows="3"
+                        placeholder="Your address"></textarea>
+                </div>
+                <button class="btn btn-primary" (click)="updateProfile()" [disabled]="profileLoading">
+                    {{ profileLoading ? 'Saving...' : '💾 Save Changes' }}
+                </button>
+            </div>
+
+            <!-- Change Password -->
+            <div class="form-card">
+                <div class="section-header" (click)="showPasswordSection = !showPasswordSection">
+                    <h3>🔒 Change Password</h3>
+                    <span class="toggle-icon">{{ showPasswordSection ? '▲' : '▼' }}</span>
+                </div>
+
+                <div *ngIf="showPasswordSection" class="password-form">
+                    <div *ngIf="passwordSuccess" class="alert alert-success">✅ {{ passwordSuccess }}</div>
+                    <div *ngIf="passwordError" class="alert alert-danger">❌ {{ passwordError }}</div>
+
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" [(ngModel)]="passwordForm.currentPassword" class="form-input"
+                            placeholder="Current password" />
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" [(ngModel)]="passwordForm.newPassword" class="form-input"
+                            placeholder="At least 6 characters" />
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" [(ngModel)]="passwordForm.confirmPassword" class="form-input"
+                            placeholder="Repeat new password" />
+                    </div>
+                    <button class="btn btn-warning" (click)="changePassword()" [disabled]="passwordLoading">
+                        {{ passwordLoading ? 'Changing...' : '🔑 Change Password' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,7 @@
+.stat-mini { text-align: center; padding: 15px; }
+.stat-mini .stat-num { font-size: 28px; font-weight: bold; color: #2c3e50; }
+.stat-mini.active .stat-num { color: #28a745; }
+.stat-mini.completed .stat-num { color: #17a2b8; }
+.stat-mini.pending .stat-num { color: #ffc107; }
+.current-bid { font-weight: bold; color: #e74c3c; }
+.time-urgent { color: #e74c3c; font-weight: 600; }

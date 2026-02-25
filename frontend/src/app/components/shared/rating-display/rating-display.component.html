@@ -1,0 +1,146 @@
+<div class="ratings-section">
+  <h3>Customer Reviews & Ratings</h3>
+
+  <!-- Rating Summary -->
+  <div class="rating-summary" *ngIf="stats">
+    <div class="summary-left">
+      <div class="average-rating">
+        <span class="big-number">{{ stats.averageRating }}</span>
+        <div class="stars">★★★★★</div>
+        <p class="review-count">{{ stats.totalReviews }} reviews</p>
+      </div>
+    </div>
+
+    <div class="summary-right">
+      <!-- Rating Distribution -->
+      <div class="rating-distribution">
+        <div *ngFor="let stars of [5, 4, 3, 2, 1]" class="distribution-row">
+          <span class="star-label">{{ stars }} ★</span>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill"
+              [style.width.%]="getRatingDistributionCount(stars)">
+            </div>
+          </div>
+          <span class="count">{{ getRatingDistributionCount(stars) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Sorting -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>Filter by Rating:</label>
+      <select (change)="onFilterChange($event)" class="filter-select">
+        <option value="0">All Ratings</option>
+        <option value="5">5 Stars</option>
+        <option value="4">4 Stars</option>
+        <option value="3">3 Stars</option>
+        <option value="2">2 Stars</option>
+        <option value="1">1 Star</option>
+      </select>
+    </div>
+
+    <div class="sort-group">
+      <label>Sort by:</label>
+      <select (change)="onSortChange($event)" class="sort-select">
+        <option value="newest">Newest First</option>
+        <option value="helpful">Most Helpful</option>
+        <option value="rating-high">Highest Rating</option>
+        <option value="rating-low">Lowest Rating</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-message" *ngIf="loading">
+    <p>Loading reviews...</p>
+  </div>
+
+  <!-- No Ratings -->
+  <div class="no-ratings" *ngIf="!loading && ratings.length === 0">
+    <p>No ratings yet. Be the first to review this product!</p>
+  </div>
+
+  <!-- Ratings List -->
+  <div class="ratings-list" *ngIf="!loading && ratings.length > 0">
+    <div *ngFor="let rating of ratings" class="rating-card">
+      <!-- Header -->
+      <div class="rating-header">
+        <div class="rater-info">
+          <p class="rater-name">{{ rating.customerName }}</p>
+          <span class="verified-badge" *ngIf="rating.isVerifiedPurchase">✓ Verified Purchase</span>
+        </div>
+        <div class="rating-date">
+          {{ rating.createdAt | date: 'short' }}
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="rating-stars">
+        <span class="stars">{{ getRatingStars(rating.rating) }}</span>
+        <span class="rating-value">{{ rating.rating }}/5</span>
+      </div>
+
+      <!-- Category Ratings (if provided) -->
+      <div class="category-ratings" *ngIf="rating.qualityRating || rating.communicationRating || rating.shippingRating">
+        <div class="category-item" *ngIf="rating.qualityRating">
+          <span class="category-label">Quality:</span>
+          <span class="category-stars">{{ getRatingStars(rating.qualityRating) }}</span>
+        </div>
+        <div class="category-item" *ngIf="rating.communicationRating">
+          <span class="category-label">Communication:</span>
+          <span class="category-stars">{{ getRatingStars(rating.communicationRating) }}</span>
+        </div>
+        <div class="category-item" *ngIf="rating.shippingRating">
+          <span class="category-label">Shipping:</span>
+          <span class="category-stars">{{ getRatingStars(rating.shippingRating) }}</span>
+        </div>
+      </div>
+
+      <!-- Review Text -->
+      <div class="review-text" *ngIf="rating.review">
+        <p>{{ rating.review }}</p>
+      </div>
+
+      <!-- Seller Response -->
+      <div class="seller-response" *ngIf="rating.sellerResponse">
+        <div class="response-header">
+          <span class="response-label">Seller Response</span>
+          <span class="response-date">{{ rating.sellerResponse.respondedAt | date: 'short' }}</span>
+        </div>
+        <p class="response-text">{{ rating.sellerResponse.text }}</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="rating-actions">
+        <button class="action-btn" (click)="markHelpful(rating._id!)">
+          👍 Helpful ({{ rating.helpfulCount || 0 }})
+        </button>
+        <span *ngIf="rating.notHelpfulCount && rating.notHelpfulCount > 0" class="action-text">
+          👎 {{ rating.notHelpfulCount }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!loading && totalPages > 1">
+    <button 
+      (click)="onPageChange(currentPage - 1)" 
+      [disabled]="currentPage === 1"
+      class="pagination-btn">
+      ← Previous
+    </button>
+    
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    
+    <button 
+      (click)="onPageChange(currentPage + 1)" 
+      [disabled]="currentPage === totalPages"
+      class="pagination-btn">
+      Next →
+    </button>
+  </div>
+</div>

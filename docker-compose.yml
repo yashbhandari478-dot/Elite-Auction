@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: auction_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    networks:
+      - auction_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: auction_backend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/online_auction_system?authSource=admin
+      JWT_SECRET: your_secret_key_change_in_production
+      JWT_EXPIRE: 7d
+      FRONTEND_URL: http://localhost:4200
+      ADMIN_EMAIL: admin@auction.com
+      ADMIN_PASSWORD: admin123
+    depends_on:
+      - mongodb
+    networks:
+      - auction_network
+    volumes:
+      - ./backend/src:/app/src
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: auction_frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    networks:
+      - auction_network
+
+volumes:
+  mongodb_data:
+
+networks:
+  auction_network:
+    driver: bridge

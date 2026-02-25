@@ -1,0 +1,114 @@
+<div class="tracker-page">
+
+    <!-- Back button -->
+    <div class="page-header">
+        <button class="back-btn" (click)="goBack()">← Back to Won Auctions</button>
+        <h1>📦 Order Tracking</h1>
+        <div class="order-id" *ngIf="tracking">Order #{{ tracking._id.slice(-8).toUpperCase() }}</div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="center-spin">
+        <div class="spinner"></div>
+        <p>Loading tracking info…</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="alert-danger">
+        <strong>Error:</strong> {{ error }}
+    </div>
+
+    <!-- Main content -->
+    <div *ngIf="!loading && tracking" class="tracker-body">
+
+        <!-- ── Product Summary Card ──────────────────── -->
+        <div class="summary-card">
+            <div class="summary-left">
+                <div class="product-icon">🏷️</div>
+                <div>
+                    <h2>{{ tracking.productName }}</h2>
+                    <p>Seller: <strong>{{ tracking.supplierName }}</strong></p>
+                    <p>Amount: <strong class="amount">₹{{ tracking.winningAmount | number }}</strong></p>
+                </div>
+            </div>
+            <div class="summary-right">
+                <div class="eta-box" *ngIf="tracking.estimatedDelivery">
+                    <div class="eta-label">Estimated Delivery</div>
+                    <div class="eta-date">{{ tracking.estimatedDelivery | date:'EEE, d MMM' }}</div>
+                    <div class="eta-days">
+                        <span *ngIf="daysUntilDelivery() > 0">{{ daysUntilDelivery() }} day{{ daysUntilDelivery() !== 1
+                            ? 's' : '' }} away</span>
+                        <span *ngIf="daysUntilDelivery() === 0">🎉 Arriving Today!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Visual Step Tracker ────────────────────── -->
+        <div class="stage-card">
+            <h3 class="section-title">Delivery Progress</h3>
+
+            <!-- Progress bar -->
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" [style.width.%]="progressPct()"></div>
+            </div>
+
+            <!-- Stage steps -->
+            <div class="stages">
+                <div class="stage" *ngFor="let s of stages; let i = index" [ngClass]="stageClass(i)">
+                    <div class="stage-icon-wrap">
+                        <div class="stage-icon">{{ s.icon }}</div>
+                        <div class="stage-connector" *ngIf="i < stages.length - 1"></div>
+                    </div>
+                    <div class="stage-label">{{ s.label }}</div>
+                    <div class="stage-sub">{{ s.sub }}</div>
+                </div>
+            </div>
+
+            <!-- Current status badge -->
+            <div class="current-status-bar">
+                <span class="pulse-dot"></span>
+                <span class="current-label">Current Status: <strong>{{ stages[currentStageIndex]?.label
+                        }}</strong></span>
+            </div>
+        </div>
+
+        <!-- ── Tracking History ───────────────────────── -->
+        <div class="stage-card" *ngIf="tracking.trackingHistory && tracking.trackingHistory.length > 0">
+            <h3 class="section-title">Tracking History</h3>
+            <div class="history-list">
+                <div class="history-item"
+                    *ngFor="let event of tracking.trackingHistory.slice().reverse(); let first = first"
+                    [class.history-latest]="first">
+                    <div class="history-dot" [class.dot-green]="first"></div>
+                    <div class="history-content">
+                        <div class="history-desc">{{ event.description }}</div>
+                        <div class="history-meta">
+                            <span *ngIf="event.location">📍 {{ event.location }}</span>
+                            <span>🕐 {{ event.timestamp | date:'d MMM y, h:mm a' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Delivery Address ───────────────────────── -->
+        <div class="stage-card" *ngIf="tracking.deliveryAddress">
+            <h3 class="section-title">Delivery Address</h3>
+            <div class="address-card">
+                <div class="address-name">{{ tracking.deliveryAddress.fullName }}</div>
+                <div class="address-line">{{ tracking.deliveryAddress.address }}</div>
+                <div class="address-line">
+                    {{ tracking.deliveryAddress.city }}, {{ tracking.deliveryAddress.state }} — {{
+                    tracking.deliveryAddress.pincode }}
+                </div>
+                <div class="address-contact">
+                    <span>📞 {{ tracking.deliveryAddress.phone }}</span>
+                    <span>✉️ {{ tracking.deliveryAddress.email }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /tracker-body -->
+
+</div>

@@ -1,0 +1,149 @@
+<!-- ============================================================
+     CUSTOMER DASHBOARD  —  EliteAuction Style
+     ============================================================ -->
+
+<!-- ── SPINNER ── -->
+<div class="global-spinner" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading auctions…</p>
+</div>
+
+<!-- ── ERROR ── -->
+<div class="error-bar" *ngIf="error">
+  ⚠️ {{ error }}
+</div>
+
+<ng-container *ngIf="!loading">
+
+  <!-- ═══════════════════════════════════════════════
+       HERO — Featured Auction
+  ═══════════════════════════════════════════════ -->
+  <section class="hero" *ngIf="featuredProduct"
+    [style.background-image]="'url(' + getProductImage(featuredProduct) + ')'">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-badge">⭐ FEATURED COLLECTION</span>
+      <h1 class="hero-title">{{ featuredProduct.name }}</h1>
+      <p class="hero-desc">{{ featuredProduct.description }}</p>
+
+      <div class="hero-meta">
+        <div class="hero-stat">
+          <span class="hero-stat-label">CURRENT BID</span>
+          <span class="hero-stat-value">
+            ₹{{ (featuredProduct.currentPrice || featuredProduct.basePrice) | number }}
+          </span>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-label">TIME REMAINING</span>
+          <span class="hero-stat-value timer-countdown">
+            {{ getTimeRemaining(featuredProduct.auctionEndTime) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn-hero-primary" [routerLink]="['/customer/product', featuredProduct._id]">
+          🔨 PLACE BID NOW
+        </button>
+        <button class="btn-hero-secondary" [routerLink]="['/customer/product', featuredProduct._id]">
+          View Details
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       TRUST BADGES
+  ═══════════════════════════════════════════════ -->
+  <section class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item" *ngFor="let badge of trustBadges">
+        <span class="trust-icon">{{ badge.icon }}</span>
+        <div>
+          <div class="trust-title">{{ badge.title }}</div>
+          <div class="trust-desc">{{ badge.desc }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       ACTIVE AUCTIONS
+  ═══════════════════════════════════════════════ -->
+  <section class="auctions-section">
+    <div class="auctions-header">
+      <div>
+        <h2 class="section-title">Active Auctions</h2>
+        <p class="section-sub">Discover hand-picked collectibles from around the world.</p>
+      </div>
+      <!-- Search -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search auctions…" [(ngModel)]="searchTerm" (input)="applyFilters()"
+          class="search-input" />
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+      <button class="tab-btn" [class.active]="selectedCategory === 'all'" (click)="selectCategory('all')">All
+        Items</button>
+      <button *ngFor="let cat of categories" class="tab-btn" [class.active]="selectedCategory === cat.name"
+        (click)="selectCategory(cat.name)">{{ cat.name }}</button>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards-grid" *ngIf="filteredProducts.length > 0">
+      <div class="auction-card" *ngFor="let product of filteredProducts">
+        <div class="card-img-wrap">
+          <img [src]="getProductImage(product)" [alt]="product.name" class="card-img" />
+          <div class="card-timer">
+            <span class="dot"></span>
+            ENDS IN &nbsp;<strong>{{ getTimeRemaining(product.auctionEndTime) }}</strong>
+          </div>
+          <button class="wish-btn">♡</button>
+        </div>
+
+        <div class="card-body">
+          <span class="card-cat">{{ product.category | uppercase }}</span>
+          <h3 class="card-name">{{ product.name }}</h3>
+          <p class="card-desc">{{ product.description }}</p>
+
+          <div class="card-footer">
+            <div class="card-bid">
+              <span class="bid-label">Current Bid</span>
+              <span class="bid-value">
+                <span class="bid-dot"></span>
+                ₹{{ (product.currentPrice || product.basePrice) | number }}
+              </span>
+            </div>
+            <button class="btn-bid" [routerLink]="['/customer/product', product._id]">Bid Now →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="filteredProducts.length === 0">
+      <div class="empty-icon">🔍</div>
+      <h3>No auctions found</h3>
+      <p>Try a different category or search term</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       NEWSLETTER
+  ═══════════════════════════════════════════════ -->
+  <section class="newsletter">
+    <h2 class="newsletter-title">Never miss an auction</h2>
+    <p class="newsletter-sub">
+      Get exclusive alerts for rare items, curated collections, and ending auctions directly in your inbox.
+    </p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="Enter your email address" [(ngModel)]="email" class="newsletter-input" />
+      <button class="newsletter-btn">Subscribe →</button>
+    </div>
+  </section>
+
+</ng-container>

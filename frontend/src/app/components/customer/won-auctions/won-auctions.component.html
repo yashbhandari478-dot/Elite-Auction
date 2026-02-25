@@ -1,0 +1,327 @@
+<div class="container">
+  <h1>🏆 Won Auctions</h1>
+
+  <div class="stats-row" *ngIf="!loading">
+    <div class="stat-mini">
+      <div class="stat-num">{{ wonAuctions.length }}</div>
+      <div class="stat-label">Total Won</div>
+    </div>
+    <div class="stat-mini accepted">
+      <div class="stat-num">{{ wonAuctions | statusFilter:'accepted' }}</div>
+      <div class="stat-label">Confirmed</div>
+    </div>
+    <div class="stat-mini spent">
+      <div class="stat-num">₹{{ totalSpent | number }}</div>
+      <div class="stat-label">Total Spent</div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner"></div>
+  </div>
+  <div class="alert-danger" *ngIf="error"><strong>Error:</strong> {{ error }}</div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngIf="wonAuctions.length === 0" class="empty-state">
+      <div class="trophy-icon">🏆</div>
+      <h3>No Won Auctions Yet</h3>
+      <p>Start bidding on active auctions to win products!</p>
+      <button class="btn-primary" routerLink="/customer/dashboard">Browse Auctions</button>
+    </div>
+
+    <div class="won-grid" *ngIf="wonAuctions.length > 0">
+      <div class="won-card" *ngFor="let auction of wonAuctions">
+        <div class="won-card-header">
+          <h3>{{ auction.productName }}</h3>
+          <span class="badge" [ngClass]="auction.status === 'active' ? 'badge-info' : getStatusClass(auction.status)">
+            {{ auction.status === 'active' ? '🔴 Auction Live' : (auction.status | titlecase) }}
+          </span>
+        </div>
+        <div class="won-card-body">
+          <div class="info-row">
+            <span>🏪 Seller</span>
+            <strong>{{ auction.supplierName || '—' }}</strong>
+          </div>
+          <div class="info-row">
+            <span>💰 {{ auction.status === 'active' ? 'Current Bid' : 'Winning Amount' }}</span>
+            <strong class="amount">₹{{ auction.winningAmount | number }}</strong>
+          </div>
+          <div class="info-row">
+            <span>📅 Auction {{ auction.status === 'active' ? 'Ends' : 'Ended' }}</span>
+            <span>{{ auction.auctionEndTime | date:'mediumDate' }}</span>
+          </div>
+          <div class="info-row" *ngIf="auction.status !== 'active'">
+            <span>💳 Payment</span>
+            <span class="badge" [ngClass]="getPaymentClass(auction.paymentStatus)">
+              {{ auction.paymentStatus | titlecase }}
+            </span>
+          </div>
+          <div class="info-row" *ngIf="auction.createdAt">
+            <span>📆 {{ auction.status === 'active' ? 'Bid Placed' : 'Won On' }}</span>
+            <span>{{ auction.createdAt | date:'mediumDate' }}</span>
+          </div>
+          <div class="card-actions">
+            <button *ngIf="auction.status === 'active'" class="btn-pay" style="background:#2563eb"
+              [routerLink]="['/customer/product', getProductId(auction)]">
+              🔨 View Auction →
+            </button>
+            <button *ngIf="auction.status !== 'active'" class="btn-pay" (click)="openPaymentModal(auction)"
+              [disabled]="auction.paymentStatus === 'completed'">
+              {{ auction.paymentStatus === 'completed' ? '✓ Payment Done' : 'Pay Now' }}
+            </button>
+            <button *ngIf="auction.paymentStatus === 'completed'" class="btn-track"
+              [routerLink]="['/customer/tracking', auction._id]">
+              🚚 Track Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════ MULTI-STEP PAYMENT MODAL ═══════════════ -->
+    <div class="modal-backdrop" *ngIf="showPaymentModal" (click)="closePaymentModal()"></div>
+    <div class="modal show" *ngIf="showPaymentModal">
+      <div class="modal-content payment-modal">
+
+        <!-- Header with step indicator -->
+        <div class="modal-header">
+          <div class="step-indicator">
+            <div class="step" [class.active]="paymentStep === 'method'"
+              [class.done]="paymentStep === 'details' || paymentStep === 'delivery' || paymentStep === 'confirmation'">1
+            </div>
+            <div class="step-line"
+              [class.done]="paymentStep === 'details' || paymentStep === 'delivery' || paymentStep === 'confirmation'">
+            </div>
+            <div class="step" [class.active]="paymentStep === 'details'"
+              [class.done]="paymentStep === 'delivery' || paymentStep === 'confirmation'">2</div>
+            <div class="step-line" [class.done]="paymentStep === 'delivery' || paymentStep === 'confirmation'"></div>
+            <div class="step" [class.active]="paymentStep === 'delivery'" [class.done]="paymentStep === 'confirmation'">
+              3</div>
+            <div class="step-line" [class.done]="paymentStep === 'confirmation'"></div>
+            <div class="step" [class.active]="paymentStep === 'confirmation'">✓</div>
+          </div>
+          <button class="close-btn" (click)="closePaymentModal()" *ngIf="paymentStep !== 'confirmation'">×</button>
+        </div>
+
+        <div class="modal-body" *ngIf="selectedAuction">
+
+          <!-- Order Summary with fee breakdown (hidden on confirmation) -->
+          <div class="payment-summary" *ngIf="paymentStep !== 'confirmation'">
+            <div class="summary-item">
+              <span>Product</span><strong>{{ selectedAuction.productName }}</strong>
+            </div>
+            <div class="summary-item">
+              <span>Seller</span><strong>{{ selectedAuction.supplierName || '—' }}</strong>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+              <span>Winning Bid</span><strong>₹{{ selectedAuction.winningAmount | number }}</strong>
+            </div>
+            <div class="summary-item premium-row">
+              <span>Buyer's Premium <small>(3%)</small></span>
+              <strong class="premium-amt">+ ₹{{ getBuyersPremium(selectedAuction) | number }}</strong>
+            </div>
+            <div class="summary-item total">
+              <span>Total Payable</span>
+              <strong class="total-amt">₹{{ getBuyerTotal(selectedAuction) | number }}</strong>
+            </div>
+            <p class="fee-note">ℹ️ Buyer's Premium is a 3% platform service fee.</p>
+          </div>
+
+          <!-- ── STEP 1: Payment Method ── -->
+          <div *ngIf="paymentStep === 'method'">
+            <p class="step-title">Choose a payment method</p>
+            <div class="payment-methods">
+              <div *ngFor="let method of paymentMethods" class="payment-option"
+                [ngClass]="{ 'selected': selectedPaymentMethod === method.id }"
+                (click)="selectedPaymentMethod = method.id">
+                <div class="method-icon">{{ method.name }}</div>
+                <div class="method-desc">{{ method.description }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── STEP 2: Card Details ── -->
+          <div *ngIf="paymentStep === 'details'" class="form-section">
+            <p class="step-title">Enter card details</p>
+
+            <div class="form-group">
+              <label>Cardholder Name</label>
+              <input type="text" class="form-control" placeholder="As printed on card"
+                [(ngModel)]="cardDetails.cardholderName" />
+            </div>
+
+            <div class="form-group">
+              <label>Card Number</label>
+              <input type="text" class="form-control" placeholder="1234 5678 9012 3456" [value]="cardDetails.cardNumber"
+                (input)="onCardNumberInput($any($event.target).value)" maxlength="19" />
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>Month</label>
+                <select class="form-control" [(ngModel)]="cardDetails.expiryMonth">
+                  <option value="">MM</option>
+                  <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m.toString().padStart(2,'0')">{{
+                    m.toString().padStart(2,'0') }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Year</label>
+                <select class="form-control" [(ngModel)]="cardDetails.expiryYear">
+                  <option value="">YYYY</option>
+                  <option *ngFor="let y of [2025,2026,2027,2028,2029,2030,2031]" [value]="y">{{ y }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>CVV</label>
+                <input type="password" class="form-control" placeholder="•••" [value]="cardDetails.cvv"
+                  (input)="onCVVInput($any($event.target).value)" maxlength="4" />
+              </div>
+            </div>
+          </div>
+
+          <!-- ── STEP 3: Delivery Details ── -->
+          <div *ngIf="paymentStep === 'delivery'" class="form-section">
+            <p class="step-title">Where should we deliver?</p>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" class="form-control" placeholder="John Doe" [(ngModel)]="deliveryDetails.fullName" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" placeholder="you@email.com"
+                  [(ngModel)]="deliveryDetails.email" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Address</label>
+              <textarea class="form-control" placeholder="House No., Street, Building Name" rows="2"
+                [(ngModel)]="deliveryDetails.address"></textarea>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" class="form-control" placeholder="Mumbai" [(ngModel)]="deliveryDetails.city" />
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" class="form-control" placeholder="Maharashtra" [(ngModel)]="deliveryDetails.state" />
+              </div>
+              <div class="form-group">
+                <label>Pincode</label>
+                <input type="text" class="form-control" placeholder="400001" [value]="deliveryDetails.pincode"
+                  (input)="onPincodeInput($any($event.target).value)" maxlength="6" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" class="form-control" placeholder="9876543210" [value]="deliveryDetails.phone"
+                (input)="onPhoneInput($any($event.target).value)" maxlength="10" />
+            </div>
+          </div>
+
+          <!-- ── STEP 4: Confirmation ── -->
+          <div *ngIf="paymentStep === 'confirmation'" class="confirmation-box">
+            <div class="success-check">✓</div>
+            <h3>Payment Successful!</h3>
+            <p class="conf-sub">Your order has been placed and will be delivered soon</p>
+
+            <!-- ── Printable Receipt ── -->
+            <div class="receipt" id="printReceipt">
+              <div class="receipt-header">
+                <div class="receipt-logo">🏆 Elite Auction</div>
+                <div class="receipt-meta">
+                  <div>Invoice #{{ selectedAuction?._id?.slice(-8)?.toUpperCase() }}</div>
+                  <div>{{ today | date:'medium' }}</div>
+                </div>
+              </div>
+
+              <div class="receipt-divider"></div>
+
+              <div class="receipt-section">
+                <div class="receipt-row">
+                  <span>Product</span>
+                  <strong>{{ selectedAuction?.productName }}</strong>
+                </div>
+                <div class="receipt-row">
+                  <span>Seller</span>
+                  <strong>{{ selectedAuction?.supplierName || '—' }}</strong>
+                </div>
+                <div class="receipt-row">
+                  <span>Payment Via</span>
+                  <strong>{{ selectedMethod?.name }}</strong>
+                </div>
+                <div class="receipt-divider"></div>
+                <div class="receipt-row">
+                  <span>Winning Bid</span>
+                  <strong>₹{{ selectedAuction?.winningAmount | number }}</strong>
+                </div>
+                <div class="receipt-row">
+                  <span>Buyer's Premium (3%)</span>
+                  <strong>+ ₹{{ getBuyersPremium(selectedAuction!) | number }}</strong>
+                </div>
+                <div class="receipt-row total-row">
+                  <span>Total Paid</span>
+                  <strong>₹{{ getBuyerTotal(selectedAuction!) | number }}</strong>
+                </div>
+              </div>
+
+              <div class="receipt-divider"></div>
+
+              <div class="receipt-section">
+                <div class="receipt-label">📦 Delivery Address</div>
+                <div class="receipt-address">
+                  <strong>{{ deliveryDetails.fullName }}</strong><br />
+                  {{ deliveryDetails.address }}<br />
+                  {{ deliveryDetails.city }}, {{ deliveryDetails.state }} — {{ deliveryDetails.pincode }}<br />
+                  📞 {{ deliveryDetails.phone }}<br />
+                  ✉️ {{ deliveryDetails.email }}
+                </div>
+              </div>
+
+              <div class="receipt-footer">Thank you for your purchase! 🎉</div>
+            </div><!-- /receipt -->
+
+            <p class="auto-close">Closing in 3 seconds…</p>
+          </div>
+
+
+        </div><!-- /modal-body -->
+
+        <!-- Footer Buttons (steps 1–3) -->
+        <div class="modal-footer" *ngIf="paymentStep !== 'confirmation'">
+          <button class="btn-secondary" (click)="closePaymentModal()" *ngIf="paymentStep === 'method'">Cancel</button>
+          <button class="btn-secondary" (click)="goBackToMethod()" *ngIf="paymentStep === 'details'">← Back</button>
+          <button class="btn-secondary" (click)="goBackToDetails()" *ngIf="paymentStep === 'delivery'">← Back</button>
+
+          <button class="btn-proceed" (click)="selectPaymentMethod()" [disabled]="!selectedPaymentMethod"
+            *ngIf="paymentStep === 'method'">
+            Next →
+          </button>
+          <button class="btn-proceed" (click)="proceedFromPaymentDetails()" *ngIf="paymentStep === 'details'">
+            Next →
+          </button>
+          <button class="btn-proceed" (click)="proceedFromDelivery()" [disabled]="paymentProcessing"
+            *ngIf="paymentStep === 'delivery'">
+            {{ paymentProcessing ? 'Processing…' : '✅ Complete Payment' }}
+          </button>
+        </div>
+
+        <!-- Footer confirmation: Print + Close -->
+        <div class="modal-footer" *ngIf="paymentStep === 'confirmation'">
+          <button class="btn-print" (click)="printBill()">🖨️ Print Bill</button>
+          <button class="btn-proceed" (click)="closePaymentModal()">Close ✓</button>
+        </div>
+
+      </div><!-- /payment-modal -->
+    </div><!-- /modal -->
+
+  </div><!-- /!loading -->
+</div>
